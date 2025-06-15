@@ -56,3 +56,12 @@ role_permissions = Table(
     Column('role_id', Integer, ForeignKey('roles.id', ondelete='CASCADE'), primary_key=True),
     Column('permission_id', Integer, ForeignKey('permissions.id', ondelete='CASCADE'), primary_key=True),
 )
+
+class TokenBlacklist(Base):
+    __tablename__ = 'token_blacklist'
+
+    id = Column(Integer, primary_key=True)
+    jti = Column(String(36), unique=True, nullable=False)
+    expires_at = Column(DateTime, nullable=False)
+    created_at = Column(DateTime, default=datetime.utcnow)
+
