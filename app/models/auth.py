@@ -6,8 +6,9 @@ from sqlalchemy.orm import relationship
 
 from . import Base
 
+
 class User(Base):
-    __tablename__ = 'users'
+    __tablename__ = "users"
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     email = Column(String(255), unique=True, nullable=False)
@@ -17,52 +18,71 @@ class User(Base):
     last_name = Column(String(100), nullable=True)
     email_confirmation_token = Column(String(36), unique=True, nullable=True)
     is_active = Column(Boolean, default=False)
+    is_social = Column(Boolean, default=False)
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
-    roles = relationship('Role', secondary='user_roles', back_populates='users')
+    roles = relationship("Role", secondary="user_roles", back_populates="users")
 
 
 class Role(Base):
-    __tablename__ = 'roles'
+    __tablename__ = "roles"
 
     id = Column(Integer, primary_key=True)
     slug = Column(String(50), unique=True, nullable=False)
     title = Column(String(100), nullable=False)
 
-    users = relationship('User', secondary='user_roles', back_populates='roles')
-    permissions = relationship('Permission', secondary='role_permissions', back_populates='roles')
+    users = relationship("User", secondary="user_roles", back_populates="roles")
+    permissions = relationship(
+        "Permission", secondary="role_permissions", back_populates="roles"
+    )
 
 
 class Permission(Base):
-    __tablename__ = 'permissions'
+    __tablename__ = "permissions"
 
     id = Column(Integer, primary_key=True)
     code = Column(String(50), unique=True, nullable=False)
     description = Column(String(255), nullable=True)
 
-    roles = relationship('Role', secondary='role_permissions', back_populates='permissions')
+    roles = relationship(
+        "Role", secondary="role_permissions", back_populates="permissions"
+    )
 
 
 user_roles = Table(
-    'user_roles',
+    "user_roles",
     Base.metadata,
-    Column('user_id', UUID(as_uuid=True), ForeignKey('users.id', ondelete='CASCADE'), primary_key=True),
-    Column('role_id', Integer, ForeignKey('roles.id', ondelete='CASCADE'), primary_key=True),
+    Column(
+        "user_id",
+        UUID(as_uuid=True),
+        ForeignKey("users.id", ondelete="CASCADE"),
+        primary_key=True,
+    ),
+    Column(
+        "role_id", Integer, ForeignKey("roles.id", ondelete="CASCADE"), primary_key=True
+    ),
 )
 
 role_permissions = Table(
-    'role_permissions',
+    "role_permissions",
     Base.metadata,
-    Column('role_id', Integer, ForeignKey('roles.id', ondelete='CASCADE'), primary_key=True),
-    Column('permission_id', Integer, ForeignKey('permissions.id', ondelete='CASCADE'), primary_key=True),
+    Column(
+        "role_id", Integer, ForeignKey("roles.id", ondelete="CASCADE"), primary_key=True
+    ),
+    Column(
+        "permission_id",
+        Integer,
+        ForeignKey("permissions.id", ondelete="CASCADE"),
+        primary_key=True,
+    ),
 )
 
+
 class TokenBlacklist(Base):
-    __tablename__ = 'token_blacklist'
+    __tablename__ = "token_blacklist"
 
     id = Column(Integer, primary_key=True)
     jti = Column(String(36), unique=True, nullable=False)
     expires_at = Column(DateTime, nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow)
-
