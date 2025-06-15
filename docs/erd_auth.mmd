@@ -1,0 +1,36 @@
+```mermaid
+erDiagram
+    users {
+        UUID id PK
+        string email
+        string phone
+        string hashed_password
+        string first_name
+        string last_name
+        boolean is_active
+        datetime created_at
+        datetime updated_at
+    }
+    roles {
+        int id PK
+        string slug
+        string title
+    }
+    permissions {
+        int id PK
+        string code
+        string description
+    }
+    user_roles {
+        UUID user_id FK
+        int role_id FK
+    }
+    role_permissions {
+        int role_id FK
+        int permission_id FK
+    }
+    users ||--o{ user_roles : ""
+    roles ||--o{ user_roles : ""
+    roles ||--o{ role_permissions : ""
+    permissions ||--o{ role_permissions : ""
+```
